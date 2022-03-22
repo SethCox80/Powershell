@@ -1,7 +1,8 @@
 #
 # if (($PSVersionTable.PSVersion).Major -gt 5){Powershell}
 # Pause
-# Import-Module -name MSOnline
+Import-Module -Name MSOnline
+Import-Module -Name AzureAD
 # Connect-Msolservice
 
 #Functions
@@ -12,8 +13,8 @@
 #******************************************************************************************************
 function YesorNo() {
     do {
-        $Ans = (read-host "Y or N").ToUpper()         
-        if ($Ans -match "^Y|N$") {
+        $Ans = (read-host "Y or N")       
+        if ($Ans.ToUpper() -match "^Y|N$") { #allows upper or upper 'y' or 'n'
             $Valid = $true
         }
         else {
