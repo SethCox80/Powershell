@@ -7,11 +7,11 @@ Import-Module -Name AzureAD
 
 #Functions
 
-#  “^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()!])(?=\\S+$).{8, 20}$”
-#  "^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)$"
+#  “^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()!])(?=\\S+$).{8, 20}$” - Potential pattern for password validation
+#  
 
 #******************************************************************************************************
-function YesorNo() {
+function Get-YesOrNo() {
     do {
         $Ans = (read-host "Y or N")       
         if ($Ans.ToUpper() -match "^Y|N$") { #allows upper or upper 'y' or 'n'
@@ -30,7 +30,7 @@ function YesorNo() {
     }
 }
 #******************************************************************************************************
-function ValidateName {
+function Get-ValidName {
     param (
         [Parameter()]
         [String]
@@ -42,10 +42,16 @@ function ValidateName {
     }
     Else {
         write-host "Invalid name. No spaces, numbers, or special characters. " -NoNewline
-        ValidateName (read-Host "Please Enter a valid name ")
+        Get-ValidName (read-Host "Please Enter a valid name ")
     }    
 }
 #******************************************************************************************************
+
+function Get-Password{
+    write-host "Create a stong password. password must be at least 8 characters in length and contain, one capital
+    letter and one lower, at least one number and one special charcter"
+    $PwTry = read-Host ""
+}
 function MainMenu() {
     WRite-host "*******************************************************************" -ForegroundColor Green
     Write-Host "*       Create a new User:                                        *" -ForegroundColor Green
@@ -76,13 +82,12 @@ function NewStudent {
         MainMenu #Call Menu
         #Get Student Name
         Write-Host "Please enter name with no spaces, numbers, or characters."
-        $First = ValidateName(read-Host "Please enter first name ")
-        $Last = ValidateName(read-Host "Please enter last name ")
+        $First = Get-ValidName(read-Host "Please enter first name ")
+        $Last = Get-ValidName(read-Host "Please enter last name ")
         #Set StudentId Number for username formation
         Do {
             $StudentNum = Read-Host "Enter Student number for new Student (####)"
-            if ($StudentNum -match "^\d{4}$") {
-                #checks for 4 digits - numbers only
+            if ($StudentNum -match "^\d{4}$") { #checks for 4 digits - numbers only
                 $NumIsRight = $true
             }
             else {
@@ -100,7 +105,8 @@ function NewStudent {
                 Write-host "Please enter a grade number 4-8" -ForegroundColor Red
                 $GradeCheck = $false
             }
-        } while (!$GradeCheck) 
+        } while (!$GradeCheck)
+        # Assign values based on input
         $PrincUserName = $Last + $StudentNum.Substring(1, 3) + "<@EmailDomain>"
         $DisplayNm = $First, $Last
         Switch ($Grade) {
@@ -113,11 +119,11 @@ function NewStudent {
         }
         ConfirmInfo
         write-host "Is this correct? " -NoNewline
-        $Ans = YesorNo
-        return $IsEmp
+        $Ans = Get-YesOrNo
     } while (!$Ans)
     Clear-Host
     MainMenu #Call Menu
+    Get-Password
     $PassWD = Read-Host "Please enter Desired password for $DisplayNm "
     $Force = $false
     # New-MsolUser `
@@ -142,15 +148,15 @@ function NewEmployee {
         MainMenu
         #Get Employee Name         
         Write-Host "Please enter name with no spaces, numbers, or characters."
-        $First = ValidateName(read-Host "Please enter first name ")
-        $Last = ValidateName(read-Host "Please enter last name ")
+        $First = Get-ValidName(read-Host "Please enter first name ")
+        $Last = Get-ValidName(read-Host "Please enter last name ")
         $PrincUserName = $First.substring(0, 1) + $Last + "@wwchristianschool.org"
         $DisplayNm = $First, $Last
         Clear-Host
         MainMenu
         ConfirmInfo
         write-host "Is this correct? " -NoNewline
-        $Ans = YesorNo
+        $Ans = Get-YesOrNo
     } while (!$Ans)
     $StTitle = "Teacher"
     $Force = $true
@@ -192,7 +198,7 @@ Do {
         2 { NewEmployee }
     }
     Write-Host "Create another User? " -NoNewline
-    $Ans = YesorNo
+    $Ans = Get-YesOrNo
 } while ($Ans)
 write-host "Ending Script" -ForegroundColor Red
 Pause
