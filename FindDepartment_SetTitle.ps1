@@ -8,9 +8,9 @@ Import-Module -Name MSOnline
 
 $Users = Get-MsolUser | Select-Object DisplayName, userprincipalname, Department, Title
 
-$OldDept = "Staff"
+$OldDept = "Teacher"
 $NewDept = "Staff"
-$NewTitle = "<new title>"
+$NewTitle = "Teacher"
 
 foreach ($User in $Users){
     if($User.Department -like $OldDept){
