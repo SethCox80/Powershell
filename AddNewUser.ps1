@@ -14,7 +14,8 @@ Import-Module -Name AzureAD
 function Get-YesOrNo() {
     do {
         $Ans = (read-host "Y or N")       
-        if ($Ans.ToUpper() -match "^Y|N$") { #allows upper or upper 'y' or 'n'
+        if ($Ans.ToUpper() -match "^Y|N$") {
+            #allows upper or upper 'y' or 'n'
             $Valid = $true
         }
         else {
@@ -47,10 +48,17 @@ function Get-ValidName {
 }
 #******************************************************************************************************
 
-function Get-Password{
-    write-host "Create a stong password. password must be at least 8 characters in length and contain, one capital
-    letter and one lower, at least one number and one special charcter"
-    $PwTry = read-Host ""
+function Get-Password {
+    write-host "Create a stong password. password must be at least 8 characters in length and contain one capital
+    letter and one lower at least one number and one special charcter - !,@,#,$,%,^,&,*,(,)"
+    $PwTry = read-Host "Enter Password"
+    if ($PwTry -match "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&*()]).{8,20}") {
+        return $PwTry
+    }
+    else {
+        write-host "the password you chose does not meet the minimum requirements"
+        Get-Password
+    }
 }
 function MainMenu() {
     WRite-host "*******************************************************************" -ForegroundColor Green
@@ -68,16 +76,15 @@ function ConfirmInfo {
     if ($NewOpt -eq 1) { Write-Host "Student's name to be added:"$First, $Last -ForegroundColor Yellow } #If new user is student
     else { Write-Host "Employee's name to be added:"$First, $Last -ForegroundColor Yellow } #if new user is employee
     Write-Host "Display Name: "$DisplayNm -ForegroundColor Blue
-    if (!$IsEmp) { Write-Host "Grade of new Student"$Grade -ForegroundColor Green } #Should skip this print line if Employee
+    if ($NewOpt -eq 1) { Write-Host "Grade of new Student"$Grade -ForegroundColor Green } #Should skip this print line if Employee
     Write-Host "Principal User Name: "$PrincUserName -ForegroundColor Blue
-    If (!$IsEmp) { Write-Host "Password will be entered at next Prompt" -ForegroundColor Red }
+    If ($NewOpt -eq 2) { Write-Host "Password will be entered at next Prompt" -ForegroundColor Red }
     elseif ($IsEmp) { Write-Host "Password set to 'Start1234' and force change at first login! " -ForegroundColor Red } 
     Write-Host "--------------------------------------------------------------------`n"
 }
 #******************************************************************************************************
 function NewStudent {
     Do {
-        $IsEmp = $false
         Clear-Host
         MainMenu #Call Menu
         #Get Student Name
@@ -87,7 +94,8 @@ function NewStudent {
         #Set StudentId Number for username formation
         Do {
             $StudentNum = Read-Host "Enter Student number for new Student (####)"
-            if ($StudentNum -match "^\d{4}$") { #checks for 4 digits - numbers only
+            if ($StudentNum -match "^\d{4}$") {
+                #checks for 4 digits - numbers only
                 $NumIsRight = $true
             }
             else {
@@ -107,7 +115,7 @@ function NewStudent {
             }
         } while (!$GradeCheck)
         # Assign values based on input
-        $PrincUserName = $Last + $StudentNum.Substring(1, 3) + "<@EmailDomain>"
+        $PrincUserName = $Last + $StudentNum.Substring(1, 3) + "@wwchristianschool.org"
         $DisplayNm = $First, $Last
         Switch ($Grade) {
             #Dept is used for the grade in Student contact info
@@ -123,26 +131,24 @@ function NewStudent {
     } while (!$Ans)
     Clear-Host
     MainMenu #Call Menu
-    Get-Password
-    $PassWD = Read-Host "Please enter Desired password for $DisplayNm "
+    $NewPass = Get-Password
     $Force = $false
-    # New-MsolUser `
-    #     -DisplayName "$DisplayNm" `
-    #     -FirstName "$First" `
-    #     -LastName "$Last" `
-    #     -UserPrincipalName "$PrincUserName" `
-    #     -Password "$PassWD" `
-    #     -ForceChangePassword $Force `
-    #     -Title "Student" `
-    #     -Department "$Dept" `
-    #     -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
+    New-MsolUser `
+        -UserPrincipalName "$PrincUserName" `
+        -DisplayName "$DisplayNm" `
+        -FirstName "$First" `
+        -LastName "$Last" `
+        -Password "$NewPass" `
+        -ForceChangePassword $Force `
+        -Title "Student" `
+        -Department "$Dept" `
+        -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
      
 }
 #******************************************************************************************************
 function NewEmployee {
     Do {
         #Get Employee Name
-        $IsEmp = $true
         Clear-Host
         #Call Menu   
         MainMenu
@@ -158,18 +164,21 @@ function NewEmployee {
         write-host "Is this correct? " -NoNewline
         $Ans = Get-YesOrNo
     } while (!$Ans)
+    Clear-Host
+    MainMenu
+    $NewPass = Get-Password
     $StTitle = "Teacher"
     $Force = $true
-    # New-MsolUser `
-    #     -DisplayName "$DisplayNm" `
-    #     -FirstName "$First" `
-    #     -LastName "$Last" `
-    #     -UserPrincipalName "$PrincUserName" `
-    #     -Password "Start!1234" `
-    #     -ForceChangePassword $Force `
-    #     -Title "$StTitle" `
-    #     -Department "$Dept" `
-    #     -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
+    New-MsolUser `
+        -UserPrincipalName "$PrincUserName" `
+        -DisplayName "$DisplayNm" `
+        -FirstName "$First" `
+        -LastName "$Last" `
+        -Password "$NewPass" `
+        -ForceChangePassword $Force `
+        -Title "$StTitle" `
+        -Department "$Dept" `
+        -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
      
 }
 #******************************************************************************************************
