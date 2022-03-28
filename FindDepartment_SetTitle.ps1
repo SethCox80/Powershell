@@ -8,10 +8,14 @@ Import-Module -Name MSOnline
 
 $Users = Get-MsolUser | Select-Object DisplayName, userprincipalname, Department, Title
 
+$OldDept = "Staff"
+$NewDept = "Staff"
+$NewTitle = "<new title>"
+
 foreach ($User in $Users){
-    if($User.Department -like "Resource"){
+    if($User.Department -like $OldDept){
     write-host $User.DisplayName, $User.Department, $User.Title
-    # Set-MsolUser -UserPrincipalName $User.UserPrincipalName -Department "Staff" -Title "Aide"
-    # write-host (Get-MsolUser -UserPrincipalName $User.UserPrincipalName | Select-Object DisplayName, userprincipalname, Department, Title) -ForegroundColor Green
+    Set-MsolUser -UserPrincipalName $User.UserPrincipalName -Department $NewDept -Title $NewTitle
+    Get-MsolUser -UserPrincipalName $User.UserPrincipalName | Select-Object DisplayName, Department, Title 
     }
 }
