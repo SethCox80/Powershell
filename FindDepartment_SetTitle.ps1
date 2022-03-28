@@ -9,9 +9,9 @@ Import-Module -Name MSOnline
 $Users = Get-MsolUser | Select-Object DisplayName, userprincipalname, Department, Title
 
 foreach ($User in $Users){
-    if($User.Department -like "Child Care"){
+    if($User.Department -like "Resource"){
     write-host $User.DisplayName, $User.Department, $User.Title
-    Set-MsolUser -UserPrincipalName $User.UserPrincipalName -Department "Child Care" -Title "Child Care Teacher"
-    Write-Host $User.DisplayName, $User.Department, $User.Title 
+    # Set-MsolUser -UserPrincipalName $User.UserPrincipalName -Department "Staff" -Title "Aide"
+    # write-host (Get-MsolUser -UserPrincipalName $User.UserPrincipalName | Select-Object DisplayName, userprincipalname, Department, Title) -ForegroundColor Green
     }
 }
