@@ -5,6 +5,9 @@ Import-Module -Name MSOnline
 Import-Module -Name AzureAD
 # Connect-Msolservice
 
+# Variables
+$UseDomain = "@wwchristianschool.org"
+
 #Functions
 
 #  “^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()!])(?=\\S+$).{8, 20}$” - Potential pattern for password validation
@@ -115,7 +118,7 @@ function NewStudent {
             }
         } while (!$GradeCheck)
         # Assign values based on input
-        $PrincUserName = $Last + $StudentNum.Substring(1, 3) + "@wwchristianschool.org"
+        $PrincUserName = $Last + $StudentNum.Substring(1, 3) + $UseDomain
         $DisplayNm = $First, $Last
         Switch ($Grade) {
             #Dept is used for the grade in Student contact info
@@ -156,7 +159,7 @@ function NewEmployee {
         Write-Host "Please enter name with no spaces, numbers, or characters."
         $First = Get-ValidName(read-Host "Please enter first name ")
         $Last = Get-ValidName(read-Host "Please enter last name ")
-        $PrincUserName = $First.substring(0, 1) + $Last + "@wwchristianschool.org"
+        $PrincUserName = $First.substring(0, 1) + $Last + $UseDomain
         $DisplayNm = $First, $Last
         Clear-Host
         MainMenu
