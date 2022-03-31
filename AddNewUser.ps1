@@ -105,13 +105,13 @@ function NewStudent {
         Do {
             $Grade = Read-Host "Enter Student's grade (4-8 use numeral)" #Only 4-8 grade have ACTIVE AND UNLOCKED O365 Accounts>
             if ($Grade -match "^[4-8]{1}$") {
-                $GradeCheck = $true
+                $ValidGrade = $true
             }
             else {
                 Write-host "Please enter a grade number 4-8" -ForegroundColor Red
-                $GradeCheck = $false
+                $ValidGrade = $false
             }
-        } while (!$GradeCheck)
+        } while (!$ValidGrade)
         # Assign values based on input
         $PrincUserName = $Last + $StudentNum.Substring(1, 3) + $UseDomain
         $DisplayNm = $First, $Last
