@@ -25,7 +25,7 @@ function Get-YesOrNo() {
             write-host "You answered '$Ans'. Please Enter " -ForegroundColor Red -NoNewline
             $Valid = $false
         }
-    }while ($Valid -eq $false)
+    }while (!$Valid)
     if ($Ans -eq "Y") {
         return $true
     }
@@ -35,11 +35,6 @@ function Get-YesOrNo() {
 }
 #******************************************************************************************************
 function Get-ValidName {
-    param (
-        [Parameter()]
-        [String]
-        $NameToCheck
-    )
     if ($NameToCheck -match "^[A-Za-z]+$") {
         # Will retrun only if the Name is Valid - No numbers, spaces, or special characters        
         return $NameToCheck
@@ -99,13 +94,13 @@ function NewStudent {
             $StudentNum = Read-Host "Enter Student number for new Student (####)"
             if ($StudentNum -match "^\d{4}$") {
                 #checks for 4 digits - numbers only
-                $NumIsRight = $true
+                $ValidNum = $true
             }
             else {
                 Write-host "Please enter a 4 digit number - numbers only"
-                $NumIsRight = $false
+                $ValidNum = $false
             }
-        } while (!$NumIsRight)
+        } while (!$ValidNum)
         #Get Student Grade
         Do {
             $Grade = Read-Host "Enter Student's grade (4-8 use numeral)" #Only 4-8 grade have ACTIVE AND UNLOCKED O365 Accounts>
