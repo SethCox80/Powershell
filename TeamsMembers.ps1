@@ -7,11 +7,11 @@ Write-Host ""
 Foreach ($Team in $AllTeamsInOrg) {       
     $TeamGUID = $Team.ToString()
     $TeamGroup = Get-UnifiedGroup -identity $Team.ToString()
-    $TeamName = (Get-Team | ? { $_.GroupID -eq $Team }).DisplayName
-    $TeamOwner = (Get-TeamUser -GroupId $Team | ? { $_.Role -eq 'Owner' }).User
+    $TeamName = (Get-Team | Where-Object { $_.GroupID -eq $Team }).DisplayName
+    $TeamOwner = (Get-TeamUser -GroupId $Team | Where-Object { $_.Role -eq 'Owner' }).User
     $TeamUserCount = ((Get-TeamUser -GroupId $Team).UserID).Count
-    $TeamGuest = (Get-UnifiedGroupLinks -LinkType Members -identity $Team | ? { $_.Name -match "#EXT#" }).Name
-    if ($TeamGuest -eq $null) {
+    $TeamGuest = (Get-UnifiedGroupLinks -LinkType Members -identity $Team | Where-Object { $_.Name -match "#EXT#" }).Name
+    if ($null -eq $TeamGuest) {
         $TeamGuest = "No Guests in Team"
     }
     $TeamChannels = (Get-TeamChannel -GroupId $Team).DisplayName
