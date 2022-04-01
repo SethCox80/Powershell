@@ -6,15 +6,32 @@ Import-Module -Name AzureAD
 # Connect-Msolservice
 
 # import Data and create Variables
-$UserData = ${}
-$UserData = Get-Content -Path C:\git\Powershell\Data\data.json | ConvertFrom-Json
+
+$Data = Get-Content -Path C:\git\Powershell\Data\data.json | ConvertFrom-Json
 
 #Functions
 
-# 
-#  
+# function Get-Data() {
+#     param ([Parameter()]
+#         [String]
+#         $Lookup)    
+#     foreach ($Rec in $Data) {
+#         $Type = $Rec.type
+#         $Dom = $Rec.domain
+#         $Lic = $Rec.License
+#         if ($Type -match $Lookup) {
+#             # $Category = $Type
+#             $Domain = $Dom
+#             $License = $Lic
+#         }
+#         else {
+#         }
+#     }
+#     return $Domain, $License
+# }
 
 #******************************************************************************************************
+
 function Get-YesOrNo() {
     do {
         $Ans = (read-host "Y or N")       
@@ -36,7 +53,11 @@ function Get-YesOrNo() {
 }
 #******************************************************************************************************
 function Get-ValidName {
-    if ($NameToCheck -match "^[A-Za-z]+$") {
+    param(
+        [String]
+        $NameToCheck
+    )
+    if ($NameToCheck -match "^[A-z]+$") {
         # Will retrun only if the Name is Valid - No numbers, spaces, or special characters        
         return $NameToCheck
     }
@@ -90,7 +111,9 @@ function NewStudent {
         Write-Host "Please enter name with no spaces, numbers, or characters."
         $First = Get-ValidName(read-Host "Please enter first name ")
         $Last = Get-ValidName(read-Host "Please enter last name ")
-        #Set StudentId Number for username formation
+        # Get account data for domain and Licensing
+        # Get-Data("Student")
+        # Set StudentId Number for username formation
         Do {
             $StudentNum = Read-Host "Enter Student number for new Student (####)"
             if ($StudentNum -match "^\d{4}$") {
@@ -114,7 +137,7 @@ function NewStudent {
             }
         } while (!$ValidGrade)
         # Assign values based on input
-        $PrincUserName = $Last + $StudentNum.Substring(1, 3) + $UseDomain
+        $PrincUserName = $Last + $StudentNum.Substring(1, 3) + $Domain
         $DisplayNm = $First, $Last
         Switch ($Grade) {
             #Dept is used for the grade in Student contact info
@@ -141,7 +164,8 @@ function NewStudent {
         -ForceChangePassword $Force `
         -Title "Student" `
         -Department "$Dept" `
-        -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
+        -LicenseAssignment "$License = $Lic
+        " -UsageLocation US
      
 }
 #******************************************************************************************************
@@ -155,7 +179,7 @@ function NewEmployee {
         Write-Host "Please enter name with no spaces, numbers, or characters."
         $First = Get-ValidName(read-Host "Please enter first name ")
         $Last = Get-ValidName(read-Host "Please enter last name ")
-        $PrincUserName = $First.substring(0, 1) + $Last + $UseDomain
+        $PrincUserName = $First.substring(0, 1) + $Last + $Domain
         $DisplayNm = $First, $Last
         Clear-Host
         MainMenu
@@ -177,7 +201,7 @@ function NewEmployee {
         -ForceChangePassword $Force `
         -Title "$StTitle" `
         -Department "$Dept" `
-        -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
+        -LicenseAssignment "$License" -UsageLocation US
      
 }
 #******************************************************************************************************
