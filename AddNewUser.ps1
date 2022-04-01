@@ -5,8 +5,9 @@ Import-Module -Name MSOnline
 Import-Module -Name AzureAD
 # Connect-Msolservice
 
-# Variables
-$UseDomain = "@wwchristianschool.org"
+# import Data and create Variables
+$UserData = ${}
+$UserData = Get-Content -Path C:\git\Powershell\Data\data.json | ConvertFrom-Json
 
 #Functions
 
