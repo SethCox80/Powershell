@@ -35,6 +35,9 @@ function Get-YesOrNo() {
 }
 #******************************************************************************************************
 function Get-ValidName {
+    param(
+        [string] $NameToCheck
+    )
     if ($NameToCheck -match "^[A-Za-z]+$") {
         # Will retrun only if the Name is Valid - No numbers, spaces, or special characters        
         return $NameToCheck
@@ -50,7 +53,7 @@ function Get-Password {
     write-host "Create a stong password. password must be at least 8 characters in length and contain one capital
     letter and one lower at least one number and one special charcter - !,@,#,$,%,^,&,*,(,)"
     $PwTry = read-Host "Enter Password"
-    if ($PwTry -match "^(?=.*[0-9])(?=.*[a-z])(?=.*[!@#$%^&*()]).{8,20}") {
+    if ($PwTry -cmatch "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()]).{8,20}") {
         return $PwTry
     }
     else {
@@ -131,16 +134,16 @@ function NewStudent {
     MainMenu #Call Menu
     $NewPass = Get-Password
     $Force = $false
-    New-MsolUser `
-        -UserPrincipalName "$PrincUserName" `
-        -DisplayName "$DisplayNm" `
-        -FirstName "$First" `
-        -LastName "$Last" `
-        -Password "$NewPass" `
-        -ForceChangePassword $Force `
-        -Title "Student" `
-        -Department "$Dept" `
-        -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
+    # New-MsolUser `
+    #     -UserPrincipalName "$PrincUserName" `
+    #     -DisplayName "$DisplayNm" `
+    #     -FirstName "$First" `
+    #     -LastName "$Last" `
+    #     -Password "$NewPass" `
+    #     -ForceChangePassword $Force `
+    #     -Title "Student" `
+    #     -Department "$Dept" `
+    #     -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
      
 }
 #******************************************************************************************************
@@ -167,16 +170,16 @@ function NewEmployee {
     $NewPass = Get-Password
     $StTitle = "Teacher"
     $Force = $true
-    New-MsolUser `
-        -UserPrincipalName "$PrincUserName" `
-        -DisplayName "$DisplayNm" `
-        -FirstName "$First" `
-        -LastName "$Last" `
-        -Password "$NewPass" `
-        -ForceChangePassword $Force `
-        -Title "$StTitle" `
-        -Department "$Dept" `
-        -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
+    # New-MsolUser `
+    #     -UserPrincipalName "$PrincUserName" `
+    #     -DisplayName "$DisplayNm" `
+    #     -FirstName "$First" `
+    #     -LastName "$Last" `
+    #     -Password "$NewPass" `
+    #     -ForceChangePassword $Force `
+    #     -Title "$StTitle" `
+    #     -Department "$Dept" `
+    #     -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
      
 }
 #******************************************************************************************************
