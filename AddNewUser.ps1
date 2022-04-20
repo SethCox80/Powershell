@@ -134,16 +134,16 @@ function NewStudent {
     MainMenu #Call Menu
     $NewPass = Get-Password
     $Force = $false
-    # New-MsolUser `
-    #     -UserPrincipalName "$PrincUserName" `
-    #     -DisplayName "$DisplayNm" `
-    #     -FirstName "$First" `
-    #     -LastName "$Last" `
-    #     -Password "$NewPass" `
-    #     -ForceChangePassword $Force `
-    #     -Title "Student" `
-    #     -Department "$Dept" `
-    #     -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
+    New-MsolUser `
+        -UserPrincipalName "$PrincUserName" `
+        -DisplayName "$DisplayNm" `
+        -FirstName "$First" `
+        -LastName "$Last" `
+        -Password "$NewPass" `
+        -ForceChangePassword $Force `
+        -Title "Student" `
+        -Department "$Dept" `
+        -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT" -UsageLocation US
      
 }
 #******************************************************************************************************
@@ -170,16 +170,16 @@ function NewEmployee {
     $NewPass = Get-Password
     $StTitle = "Teacher"
     $Force = $true
-    # New-MsolUser `
-    #     -UserPrincipalName "$PrincUserName" `
-    #     -DisplayName "$DisplayNm" `
-    #     -FirstName "$First" `
-    #     -LastName "$Last" `
-    #     -Password "$NewPass" `
-    #     -ForceChangePassword $Force `
-    #     -Title "$StTitle" `
-    #     -Department "$Dept" `
-    #     -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
+    New-MsolUser `
+        -UserPrincipalName "$PrincUserName" `
+        -DisplayName "$DisplayNm" `
+        -FirstName "$First" `
+        -LastName "$Last" `
+        -Password "$NewPass" `
+        -ForceChangePassword $Force `
+        -Title "$StTitle" `
+        -Department "$Dept" `
+        -LicenseAssignment "wwchristianschoolorg:STANDARDWOFFPACK_FACULTY" -UsageLocation US
      
 }
 #******************************************************************************************************
