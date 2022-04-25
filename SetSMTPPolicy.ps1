@@ -3,7 +3,7 @@ Import-Module MSOnline
 
 $Users = @{}
 $Auth = @{}
-$Dept = "Preschool"
+$Dept = "Staff"
 $Title = "Student"
 
 $Users = Get-MsolUser
