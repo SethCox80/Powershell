@@ -18,8 +18,7 @@ foreach($User in $Users){
         write-host "Mailbox Identity: "$Identity
         $Auth = Get-CASMailbox -Identity $Identity
         if ($Auth.ImapEnabled -eq $true){
-            set-CASMailbox -Identity $Identity -ImapEnabled $false
-        }
+            set-CASMailbox -Identity $Identity -ImapEnabled $false -PopEnabled $false -SmtpClientAuthenticationDisabled $true        }
         $Auth = Get-CASMailbox -Identity $Identity
         Write-Host $Identity "set to: "$Auth.ImapEnabled -ForegroundColor Green `n
     #}
