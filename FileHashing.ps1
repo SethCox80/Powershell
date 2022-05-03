@@ -18,17 +18,17 @@ function Get-ControlHash {
     }
 }
 $FileTohash = "C:\Temp\ubuntu-20.04.4-live-server-amd64.iso"  # Get-FileToHash
-$ControlHash =  "28ccdb56450e643bad03bb7bcf7507ce3d8d90e8bf09e38f6bd9ac298a98eaad" # Get-ControlHash
-$Algs = ("MD5", "SHA1", "SHA256", "SHA384", "SHA512")
-write-host "Hash`t`tPath and File" -ForegroundColor Yellow
+$ControlHash =  "CACF320E651E1AE3B51320EB7CDD0151DC330847F21B6D3B7324D270C4CEDE4B40413D13095D3B17EF62ABE6E92439D8" # Get-ControlHash
+$Algs = ("SHA1", "SHA256", "SHA384", "SHA512")
+write-host "Hash`t`t`tFile Hash" -ForegroundColor Yellow
 foreach ($Alg in $Algs) {
     $Hash = (Get-FileHash -Path $FileToHash -Algorithm $Alg).Hash
-    [String]::Format("[-] {0} `t`t {1} `t {2}", $Alg, $FileToHash, $Hash) 
+    [String]::Format("[-] {0}`t`t{1}", $Alg, $Hash) 
     if ($Hash -eq $ControlHash) {
-        [String]::Format("[+] Matches {0} Hash of {1} [:] {2}", $Alg, $FileToHash, $Hash)
+        write-host "[+] Matches "$Alg"`t"$Hash -ForegroundColor Green
         $Match = $true
     }
 }
 if($Match -ne $true){
-    write-host "File did not match known hash in any hash Algorythm!!!"-ForegroundColor Red
+    write-host "[::] File did not match given file hash in any hash Algorythm!!!"-ForegroundColor Red
 }
