@@ -17,8 +17,8 @@ function Get-ControlHash {
         Get-ControlHash
     }
 }
-$FileTohash = "C:\Temp\ubuntu-20.04.4-live-server-amd64.iso"  # Get-FileToHash
-$ControlHash =  "CACF320E651E1AE3B51320EB7CDD0151DC330847F21B6D3B7324D270C4CEDE4B40413D13095D3B17EF62ABE6E92439D8" # Get-ControlHash
+$FileTohash = Get-FileToHash
+$ControlHash = Get-ControlHash
 $Algs = ("SHA1", "SHA256", "SHA384", "SHA512")
 write-host "Hash`t`t`tFile Hash" -ForegroundColor Yellow
 foreach ($Alg in $Algs) {
