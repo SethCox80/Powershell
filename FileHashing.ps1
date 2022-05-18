@@ -17,8 +17,9 @@ function Get-ControlHash {
         Get-ControlHash
     }
 }
-$FileTohash = read-host "Enter path and file name. eg: 'c:\####\####\#######.iso'"  # Get-FileToHash
-$ControlHash = read-host "Enter given hash checksum to verify" # Get-ControlHash
+
+$FileTohash = Get-FileToHash
+$ControlHash = Get-ControlHash
 $Algs = ("SHA1", "SHA256", "SHA384", "SHA512")
 write-host "Hash`t`t`tFile Hash" -ForegroundColor Yellow
 foreach ($Alg in $Algs) {
