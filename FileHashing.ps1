@@ -1,5 +1,5 @@
 function Get-FileToHash {
-    $FileToHash = read-host "Enter path and filename of file to test Hash(s)"
+    $FileToHash = read-host "Enter path and filename of file to test eg 'c:\???\?????\?????.???'"
     if (Test-Path $FileToHash) {
         return $FileToHash
     }
@@ -9,7 +9,7 @@ function Get-FileToHash {
 }
 
 function Get-ControlHash {
-    $ControlHash = read-host "Enter known hash"
+    $ControlHash = read-host "Enter known checksum"
     if ($ControlHash -match ".*[A-Za-z\d]$") {
         return $ControlHash
     }
