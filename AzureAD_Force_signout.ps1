@@ -1,6 +1,7 @@
 #Import-Module AzureAD
 #connect-azuread 
 
+$Students = @{}
 $Students = Get-Msoluser | Select-Object Displayname, userprincipalname, Title, Department, BlockCredential
 
 foreach ($Student in $Students) {
