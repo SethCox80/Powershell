@@ -1,9 +1,9 @@
 Get-ExecutionPolicy   
-Set-ExecutionPolicyUnrestricted–ScopeCurrentUser  
+Set-ExecutionPolicy Unrestricted–ScopeCurrentUser  
 $credential = Get-Credential  
-Connect-MsolService–Credential $credential  
+Connect-MsolService –Credential $credential  
 $UserName = Read-Host"Enter the username"  
-$authentication = New-Object-Type Name Microsoft.Online.Administration.StrongAuthenticationRequirement  
+$authentication = New-Object -Type -Name Microsoft.Online.Administration.StrongAuthenticationRequirement  
 $authentication.RelyingParty = "*"  
 $authentication.State = "Enabled"  
 $authentication.RememberDevicesNotIssuedBefore = (Get-Date)  
