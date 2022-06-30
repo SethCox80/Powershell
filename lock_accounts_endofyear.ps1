@@ -22,7 +22,7 @@ foreach ($Account in $Accounts) {
             # $true = locked, $false = unlocked
             write-host "--Now locking account for" $Name -ForegroundColor Green
             Set-MsolUser -UserPrincipalName $UserName -BlockCredential $true # $true = locked, $false = unlocked
-           
+            #Confirm account is locked with account lookup
             Write-Host "++" (Get-MsolUser -UserPrincipalName $UserName).DisplayName -ForegroundColor Blue -NoNewline
             write-host ":: Is Blocked = " (Get-MsolUser -UserPrincipalName $UserName).BlockCredential -ForegroundColor Red
         }
