@@ -14,25 +14,18 @@ $UseDomain = "@wwchristianschool.org"
 #  
 
 #******************************************************************************************************
-function Get-YesOrNo() {
-    do {
-        $Ans = (read-host "Y or N")       
-        if ($Ans.ToUpper() -match "^Y|N$") {
-            #allows upper or upper 'y' or 'n'
-            $Valid = $true
-        }
-        else {
-            write-host "You answered '$Ans'. Please Enter " -ForegroundColor Red -NoNewline
-            $Valid = $false
-        }
-    }while (!$Valid)
-    if ($Ans -eq "Y") {
+function Get-YesOrNo() { 
+    $Ans = (read-host "Y or N")       
+    if ($Ans.ToUpper() -match "^Y|N$") {
+        #allows upper or upper 'y' or 'n'
         return $true
     }
     else {
-        return $false
+        write-host "You answered '$Ans'. Please Enter " -ForegroundColor Red -NoNewline
+        Get-YesOrNo
     }
 }
+
 #******************************************************************************************************
 function Get-ValidName {
     param(

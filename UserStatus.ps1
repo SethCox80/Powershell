@@ -1,6 +1,7 @@
 <#
 Get Student Sign in status or
 Set sign in status
+Export Status of all users to CSV
 #>
 
 $Users = Get-Msoluser | Select-Object *
