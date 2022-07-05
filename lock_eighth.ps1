@@ -11,7 +11,7 @@ foreach ($User in $Users){
         write-host $Student 'will be unlocked' -foregroundcolor Blue
         Set-MsolUser -ObjectID $ObjID -BlockCredential $true
         $IsLocked = (get-msoluser -userprincipalname $Student).blockcredential 
-        if ($IsLocked -eq $false){
+        if ($IsLocked -eq $true){
             write-host '++ '$Student 'is now locked' -foregroundcolor Green
         }
         else {
