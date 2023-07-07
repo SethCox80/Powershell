@@ -1,5 +1,4 @@
-Import-Module ExchangeOnlineManagement
-Import-Module MSOnline
+Import-Module 
 
 $Users = @{}
 $Auth = @{}

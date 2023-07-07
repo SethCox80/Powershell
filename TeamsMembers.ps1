@@ -26,5 +26,5 @@ if ($TestPath -ne $true) {
     New-Item -ItemType directory -Path 'c:\temp' | Out-Null
     write-Host  'Creating directory to write file to c:\temp. Your file is uploaded as TeamsDatav2.csv'
 }
-else { Write-Host "Your file has been uploaded to c:\temp as 'TeamsDatav2.csv'" }
+else { Write-Host "Your file will be uploaded to c:\temp as 'TeamsDatav2.csv'" }
 $TeamList | Export-Csv c:\temp\TeamsDatav2.csv 
