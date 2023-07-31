@@ -27,15 +27,17 @@ foreach ($User in $Users) {
         Default { "Not a student" }
     }
     $IsBlocked = $User.BlockCredential
-    $UserList = $UserList + [PSCustomObject]@{
-        First_Name          = $First;
-        Last_Name           = $Last;
-        Dispaly_Name        = $DisplayName;
-        User_Principal_Name = $Username;
-        Title               = $Title;
-        Department          = $Department;
-        Grade               = $Grade
-        Is_Blocked          = $IsBlocked
+    if($Title -eq 'student'){
+        $UserList = $UserList + [PSCustomObject]@{
+            First_Name          = $First;
+            Last_Name           = $Last;
+            Dispaly_Name        = $DisplayName;
+            User_Principal_Name = $Username;
+            Title               = $Title;
+            Department          = $Department;
+            Grade               = $Grade
+            Is_Blocked          = $IsBlocked
+        }
     }
 }
 
