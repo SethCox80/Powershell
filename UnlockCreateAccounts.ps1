@@ -1,4 +1,4 @@
-$NewUsers = Import-Csv C:\git\Powershell\Data\StudentRoster_9_4_2022.xls.csv
+$NewUsers = Import-Csv C:\git\Powershell\data\StudentRosterCSV_8_11_2023.csv
 
 foreach ($User in $NewUsers) {
     $Displayname = $User.Displayname
@@ -26,7 +26,7 @@ foreach ($User in $NewUsers) {
                 -Department $dept `
                 -Title "Student"
         }
-        write-host $Displayname "Username:" $StudUserPrincName "in grade" $dept "shows grade" $Student.Department "and is blocked (true/false)" $Student.BlockCredential
+        write-host $Displayname "Username:" $StudUserPrincName "in grade" $dept "shows grade" $Student.Department "and is blocked (true/false)" $CheckBlock
 
 
     }

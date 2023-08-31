@@ -34,7 +34,7 @@ foreach ($User in $Users) {
         
     #Export Status to CSV
     }
-    if ($IsBlocked -eq $true) {
+    if ($IsBlocked -eq "True") {
         $Status = 'Blocked'
     }
     else {
@@ -42,7 +42,7 @@ foreach ($User in $Users) {
     }
     $Student = $Student + [PSCustomObject]@{'Display Name' = $Name; `
                                             'User Name' = $UserName; `
-                                            'Title (Staff, studend, etc)' = $Title
+                                            'Title (Staff, student, etc)' = $Title
                                             'Grade (if Student)' = $Grade; `
                                             'Account Status' = $Status `
                                              -join ', '; }
