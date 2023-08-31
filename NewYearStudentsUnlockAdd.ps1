@@ -25,7 +25,7 @@ foreach ($Student in $Roster) {
         <# Action when all if and elseif conditions are false #>
         Write-host $DisplayName "Does not exist. Createing User." -ForegroundColor Red
         New-MsolUser `
-            -UserPrincipalName $UPrincipalName `
+            -UserPrincipalName $Username `
             -DisplayName $DisplayName `
             -FirstName $First `
             -LastName $Last `
