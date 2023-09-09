@@ -15,11 +15,16 @@ foreach ($Student in $Roster) {
         '7' { $Grade = 'Seventh' }
         '8' { $Grade = 'Eighth' }
     }
-    $UPrincipalName = (Get-MsolUser -SearchString $DisplayName).UserPrincipalName
-    if ($UPrincipalName){
+    $StudentAcct=Get-MsolUser -SearchString $DisplayName
+    $DispName = $Student.DisplayName
+    $Grade = $Student.Department
+    if ($DispName){
         Write-Host $DisplayName $UPrincipalName": User exits - going into grade" $Grade
         Set-MsolUser -UserPrincipalName $UPrincipalName -Department $Grade -Title "Student" -BlockCredential $false 
         write-host ((Get-MsolUser -SearchString $UPrincipalName).DisplayName)  "has been edited" -ForegroundColor Yellow
+        if (){
+            
+        }
     }
     else {
         <# Action when all if and elseif conditions are false #>

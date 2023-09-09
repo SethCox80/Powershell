@@ -1,14 +1,14 @@
-#Import-Module AzureAD
-#connect-azuread 
+# Import-Module AzureAD
+# connect-azuread 
 
-$Students = @{}
-$Students = Get-Msoluser | Select-Object Displayname, userprincipalname, Title, Department, BlockCredential
+$Users = @{}
+$Users = Get-Msoluser | Select-Object Displayname, userprincipalname, Title, Department, BlockCredential
 
-foreach ($Student in $Students) {
-    $Name = $Student.Displayname
-    $Username = $Student.userprincipalname
-    $Grade = $Student.Department
-    $Title = $Student.Title
+foreach ($User in $Users) {
+    $Name = $User.Displayname
+    $Username = $User.userprincipalname
+    $Grade = $User.Department
+    $Title = $User.Title
     $IsBlocked = $Student.BlockCredential
 
     If ($Title -eq 'Student') {
