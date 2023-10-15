@@ -1,4 +1,4 @@
-$names = Get-content ".\\block.txt"
+$names = Get-content ".\Powershell\block.txt"
 
 foreach ($name in $names){
   if (Test-Connection -ComputerName $name -Count 1 -ErrorAction SilentlyContinue){

@@ -1,4 +1,4 @@
-$Roster = Import-Csv .\Data\StudentRosterCSV_8_30_2023.csv
+$Roster = Import-Csv .\Data\StudentRosterCSV_9_9_2023.csv
 foreach ($Student in $Roster) {
     $First = $Student.'First Name'
     $Last = $Student.'Last Name'  
@@ -15,20 +15,23 @@ foreach ($Student in $Roster) {
         '7' { $Grade = 'Seventh' }
         '8' { $Grade = 'Eighth' }
     }
-    $StudentAcct=Get-MsolUser -SearchString $DisplayName
-    $DispName = $Student.DisplayName
-    $Grade = $Student.Department
-    if ($DispName){
-        Write-Host $DisplayName $UPrincipalName": User exits - going into grade" $Grade
-        Set-MsolUser -UserPrincipalName $UPrincipalName -Department $Grade -Title "Student" -BlockCredential $false 
-        write-host ((Get-MsolUser -SearchString $UPrincipalName).DisplayName)  "has been edited" -ForegroundColor Yellow
-        if (){
-            
+    $NameToSearch = (Get-MsolUser -SearchString $DisplayName).UserPrincipalName
+    if ($NameToSearch){
+        Write-Host $DisplayName $Username": User exits - going into grade" $Grade
+        Set-MsolUser -UserPrincipalName $NameToSearch -Department $Grade -Title "Student" -BlockCredential $false
+            # <# Set-MsolUserPassword -ObjectId <Guid>
+            #         [-NewPassword <String>]
+            #         [-ForceChangePassword <Boolean>]
+            #         [-ForceChangePasswordOnly <Boolean>]
+            #         [-TenantId <Guid>]
+            #         [<CommonParameters>]
+            # #>
+        Set-MsolUserPassword -UserPrincipalName $Username -NewPassword $Student.Password -ForceChangePassword $false
+        write-host $NameToSearch "has been edited" -ForegroundColor Yello 
+                
         }
-    }
     else {
-        <# Action when all if and elseif conditions are false #>
-        Write-host $DisplayName "Does not exist. Createing User." -ForegroundColor Red
+        Write-host $DisplayName $Grade "Does not exist. Createing User." -ForegroundColor Red
         New-MsolUser `
             -UserPrincipalName $Username `
             -DisplayName $DisplayName `
@@ -36,6 +39,7 @@ foreach ($Student in $Roster) {
             -LastName $Last `
             -Department $Grade `
             -Title "Student"
+            # -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT"
     }
        
 }
