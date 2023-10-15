@@ -1,5 +1,5 @@
-Get-ExecutionPolicy   
-Set-ExecutionPolicy Unrestricted–ScopeCurrentUser  
+# Get-ExecutionPolicy   
+# Set-ExecutionPolicy Unrestricted–ScopeCurrentUser  
 $credential = Get-Credential  
 Connect-MsolService –Credential $credential  
 $UserName = Read-Host"Enter the username"  
