@@ -1,5 +1,3 @@
-Import-Module 
-
 $Users = @{}
 $Auth = @{}
 # $Dept = "Staff"
