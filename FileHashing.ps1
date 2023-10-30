@@ -4,6 +4,7 @@ function Get-FileToHash {
         return $FileToHash
     }
     else {
+        Write-Host "Path or file not found" -Foregroundcolor Red
         Get-FileToHash
     }
 }
@@ -20,6 +21,7 @@ function Get-ControlHash {
 
 $FileTohash = Get-FileToHash
 $ControlHash = Get-ControlHash
+$Match = $false
 $Algs = ("SHA1", "SHA256", "SHA384", "SHA512")
 write-host "Hash`t`t`tFile Hash" -ForegroundColor Yellow
 foreach ($Alg in $Algs) {
@@ -28,7 +30,9 @@ foreach ($Alg in $Algs) {
     if ($Hash -eq $ControlHash) {
         write-host "[+] Matches "$Alg"`t"$Hash -ForegroundColor Green
         $Match = $true
+        break
     }
+    
 }
 if($Match -ne $true){
     write-host "[::] File did not match given file hash in any hash Algorythm!!!"-ForegroundColor Red
