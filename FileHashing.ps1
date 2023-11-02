@@ -22,7 +22,7 @@ function Get-ControlHash {
 $FileTohash = Get-FileToHash
 $ControlHash = Get-ControlHash
 $Match = $false
-$Algs = ("SHA1", "SHA256", "SHA384", "SHA512")
+$Algs = ("MD5", "SHA1", "SHA256", "SHA384", "SHA512")
 write-host "Hash`t`t`tFile Hash" -ForegroundColor Yellow
 foreach ($Alg in $Algs) {
     $Hash = (Get-FileHash -Path $FileToHash -Algorithm $Alg).Hash
