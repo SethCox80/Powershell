@@ -34,6 +34,6 @@ foreach ($Alg in $Algs) {
     }
     
 }
-if($Match -ne $true){
+if ($Match -ne $true) {
     write-host "[::] File did not match given file hash in any hash Algorythm!!!"-ForegroundColor Red
 }
