@@ -5,9 +5,11 @@ $Student_List = @()
 
 foreach ($User in $CurrentUsers){
     if ($User.Department = 'student'){
-        $Student_List = $Student_List + $User}
+        $Student_List = $Student_List + $User
+        Write-Host $User.displayname $User.BlockCredential
+    }
 }
 
 # Export to CSV
-$csvFilePath = ".\Powershell\currentusers.csv"
-$CurrentUsers | Export-Csv -Path $csvFilePath -NoTypeInformation
+# $csvFilePath = ".\Powershell\currentusers.csv"
+# $CurrentUsers | Export-Csv -Path $csvFilePath -NoTypeInformation

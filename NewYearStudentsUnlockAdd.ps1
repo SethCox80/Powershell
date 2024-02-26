@@ -1,12 +1,3 @@
-# Lock all students before checking new roster against current accounts
-
-$CurUsers = Get-MsolUser | Select-Object Display, UserPrincipalName, Department
-
-foreach ($CurUser in $CurUsers){
-    if
-}
-]
-
 $Roster = Import-Csv .\Data\StudentRosterCSV_8_30_2023.csv
 foreach ($Student in $Roster) {
     $First = $Student.'First Name'
@@ -27,17 +18,15 @@ foreach ($Student in $Roster) {
     $StudentAcct=Get-MsolUser -SearchString $DisplayName
     $DispName = $Student.DisplayName
     $Grade = $Student.Department
-    if ($StudentAcct){
+    if ($DispName){
         Write-Host $DisplayName $UPrincipalName": User exits - going into grade" $Grade
         Set-MsolUser -UserPrincipalName $UPrincipalName -Department $Grade -Title "Student" -BlockCredential $false 
         write-host ((Get-MsolUser -SearchString $UPrincipalName).DisplayName)  "has been edited" -ForegroundColor Yellow
         if (){
             
         }
-    }
     else {
-        <# Action when all if and elseif conditions are false #>
-        Write-host $DisplayName "Does not exist. Createing User." -ForegroundColor Red
+        Write-host $DisplayName $Grade "Does not exist. Createing User." -ForegroundColor Red
         New-MsolUser `
             -UserPrincipalName $Username `
             -DisplayName $DispName `
@@ -45,6 +34,7 @@ foreach ($Student in $Roster) {
             -LastName $Last `
             -Department $Grade `
             -Title "Student"
+            # -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT"
     }
        
 }

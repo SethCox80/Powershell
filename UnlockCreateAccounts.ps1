@@ -1,4 +1,4 @@
-$NewUsers = Import-Csv C:\git\Powershell\data\StudentRosterCSV_8_11_2023.csv
+$NewUsers = Import-Csv C:\git\Powershell\data\StudentRosterCSV_9_9_2023.csv
 
 foreach ($User in $NewUsers) {
     $Displayname = $User.Displayname
@@ -20,11 +20,12 @@ foreach ($User in $NewUsers) {
         $StudUserPrincName = $Student.UserPrincipalName
         $CheckBlock = $Student.BlockCredential
         Write-Host $StudUserPrincName $Displayname "Found" -foreground yellow
-        if ($CheckBlock = $true) {
+        if (get-msoluser -SearchString $Displayname) {
             Set-MsolUser -ObjectId $ObjID `
-                -BlockCredential $false `
+                -BlockCredential $true `
                 -Department $dept `
-                -Title "Student"
+                -Title "Student" `
+                -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT"
         }
         write-host $Displayname "Username:" $StudUserPrincName "in grade" $dept "shows grade" $Student.Department "and is blocked (true/false)" $CheckBlock
 
@@ -42,5 +43,5 @@ foreach ($User in $NewUsers) {
             -LicenseAssignment "wwchristianschoolorg:ENTERPRISEPACKPLUS_STUUSEBNFT"
         
     }
-    Set-MsolUserPassword -UserPrincipalName $User.UserPrincipalName -NewPassword $User.Password -ForceChangePassword $false | Out-Null
+    #Set-MsolUserPassword -UserPrincipalName $UPN -NewPassword $User.Password -ForceChangePassword $false | Out-Null
 }
