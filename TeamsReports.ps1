@@ -69,7 +69,7 @@ Write-Host Importing Microsoft Teams module... -ForegroundColor Yellow
 
 
 #Check for Teams connectivity
-If($Team -ne $null)
+If($null -ne $Team)
 {
  Write-host `nSuccessfully connected to Microsoft Teams -ForegroundColor Green
 }
@@ -117,7 +117,7 @@ Do {
      $Path="./All Teams Report_$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
      Write-Host Exporting all Teams report...
      $Count=0
-     Get-Team | foreach {
+     Get-Team | ForEach-Object {
      $TeamName=$_.DisplayName
      Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName"
      $Count++
@@ -129,10 +129,10 @@ Do {
      $ChannelCount=(Get-TeamChannel -GroupId $GroupId).count
      $TeamUser=Get-TeamUser -GroupId $GroupId
      $TeamMemberCount=$TeamUser.Count
-     $TeamOwnerCount=($TeamUser | ?{$_.role -eq "Owner"}).count
+     $TeamOwnerCount=($TeamUser | Where-Object{$_.role -eq "Owner"}).count
      $Result=@{'Teams Name'=$TeamName;'Team Type'=$Visibility;'Mail Nick Name'=$MailNickName;'Description'=$Description;'Archived Status'=$Archived;'Channel Count'=$ChannelCount;'Team Members Count'=$TeamMemberCount;'Team Owners Count'=$TeamOwnerCount}
      $Results= New-Object psobject -Property $Result
-     $Results | select 'Teams Name','Team Type','Mail Nick Name','Description','Archived Status','Channel Count','Team Members Count','Team Owners Count' | Export-Csv $Path -NoTypeInformation -Append
+     $Results | Select-Object 'Teams Name','Team Type','Mail Nick Name','Description','Archived Status','Channel Count','Team Members Count','Team Owners Count' | Export-Csv $Path -NoTypeInformation -Append
      }
      Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName" -Completed
      if((Test-Path -Path $Path) -eq "True") 
@@ -146,18 +146,18 @@ Do {
      $Path="./All Teams Members and Owner Report_$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
      Write-Host Exporting all Teams members and owners report...
      $Count=0
-     Get-Team | foreach {
+     Get-Team | ForEach-Object {
       $TeamName=$_.DisplayName
       Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName"
       $Count++
       $GroupId=$_.GroupId
-      Get-TeamUser -GroupId $GroupId | foreach {
+      Get-TeamUser -GroupId $GroupId | ForEach-Object {
        $Name=$_.Name
        $MemberMail=$_.User
        $Role=$_.Role
        $Result=@{'Teams Name'=$TeamName;'Member Name'=$Name;'Member Mail'=$MemberMail;'Role'=$Role}
        $Results= New-Object psobject -Property $Result
-       $Results | select 'Teams Name','Member Name','Member Mail','Role' | Export-Csv $Path -NoTypeInformation -Append
+       $Results | Select-Object 'Teams Name','Member Name','Member Mail','Role' | Export-Csv $Path -NoTypeInformation -Append
       }
      }
      Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName" -Completed
@@ -174,13 +174,13 @@ Do {
      $GroupId=(Get-Team -DisplayName $TeamName).GroupId 
      Write-Host Exporting $TeamName"'s" Members and Owners report...
      $Path=".\MembersOf $TeamName Team Report _$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
-     Get-TeamUser -GroupId $GroupId | foreach {
+     Get-TeamUser -GroupId $GroupId | ForEach-Object {
       $Name=$_.Name
       $MemberMail=$_.User
       $Role=$_.Role
       $Result=@{'Member Name'=$Name;'Member Mail'=$MemberMail;'Role'=$Role}
       $Results= New-Object psobject -Property $Result
-      $Results | select 'Member Name','Member Mail','Role' | Export-Csv $Path -NoTypeInformation -Append
+      $Results | Select-Object 'Member Name','Member Mail','Role' | Export-Csv $Path -NoTypeInformation -Append
      }
      if((Test-Path -Path $Path) -eq "True") 
      {
@@ -194,17 +194,17 @@ Do {
      $Path="./All Teams Owner Report_$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
      Write-Host Exporting all Teams owner report...
      $Count=0
-     Get-Team | foreach {
+     Get-Team | ForEach-Object {
       $TeamName=$_.DisplayName
       Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName"
       $Count++
       $GroupId=$_.GroupId
-      Get-TeamUser -GroupId $GroupId | ?{$_.role -eq "Owner"} | foreach {
+      Get-TeamUser -GroupId $GroupId | Where-Object{$_.role -eq "Owner"} | ForEach-Object {
        $Name=$_.Name
        $MemberMail=$_.User
        $Result=@{'Teams Name'=$TeamName;'Owner Name'=$Name;'Owner Mail'=$MemberMail}
        $Results= New-Object psobject -Property $Result
-       $Results | select 'Teams Name','Owner Name','Owner Mail' | Export-Csv $Path -NoTypeInformation -Append
+       $Results | Select-Object 'Teams Name','Owner Name','Owner Mail' | Export-Csv $Path -NoTypeInformation -Append
       }
      }
      Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName" -Completed
@@ -221,12 +221,12 @@ Do {
      $GroupId=(Get-Team -DisplayName $TeamName).GroupId 
      Write-Host Exporting $TeamName team"'"s Owners report...
      $Path=".\OwnersOf $TeamName team report_$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
-     Get-TeamUser -GroupId $GroupId | ?{$_.role -eq "Owner"} | foreach {
+     Get-TeamUser -GroupId $GroupId | Where-Object{$_.role -eq "Owner"} | ForEach-Object {
       $Name=$_.Name
       $MemberMail=$_.User
       $Result=@{'Member Name'=$Name;'Member Mail'=$MemberMail}
       $Results= New-Object psobject -Property $Result
-      $Results | select 'Member Name','Member Mail' | Export-Csv $Path -NoTypeInformation -Append
+      $Results | Select-Object 'Member Name','Member Mail' | Export-Csv $Path -NoTypeInformation -Append
      }
      if((Test-Path -Path $Path) -eq "True") 
      {
@@ -240,22 +240,22 @@ Do {
       $Path="./All Channels Report_$((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
       Write-Host Exporting all Channels report...
       $Count=0
-      Get-Team | foreach {
+      Get-Team | ForEach-Object {
        $TeamName=$_.DisplayName
        Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing Team: $TeamName "
        $Count++
        $GroupId=$_.GroupId
-       Get-TeamChannel -GroupId $GroupId | foreach {
+       Get-TeamChannel -GroupId $GroupId | ForEach-Object {
         $ChannelName=$_.DisplayName
         Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing Team: $TeamName "`n" Currently Processing Channel: $ChannelName"
         $MembershipType=$_.MembershipType
         $Description=$_.Description
         $ChannelUser=Get-TeamChannelUser -GroupId $GroupId -DisplayName $ChannelName
         $ChannelMemberCount=$ChannelUser.Count
-        $ChannelOwnerCount=($ChannelUser | ?{$_.role -eq "Owner"}).count
+        $ChannelOwnerCount=($ChannelUser | Where-Object{$_.role -eq "Owner"}).count
         $Result=@{'Teams Name'=$TeamName;'Channel Name'=$ChannelName;'Membership Type'=$MembershipType;'Description'=$Description;'Total Members Count'=$ChannelMemberCount;'Owners Count'=$ChannelOwnerCount}
         $Results= New-Object psobject -Property $Result
-        $Results | select 'Teams Name','Channel Name','Membership Type','Description','Owners Count','Total Members Count' | Export-Csv $Path -NoTypeInformation -Append
+        $Results | Select-Object 'Teams Name','Channel Name','Membership Type','Description','Owners Count','Total Members Count' | Export-Csv $Path -NoTypeInformation -Append
        }
       }
       Write-Progress -Activity "`n     Processed Teams count: $Count "`n"  Currently Processing: $TeamName  `n Currently Processing Channel: $ChannelName"  -Completed
@@ -271,7 +271,7 @@ Do {
       $Count=0
       $GroupId=(Get-Team -DisplayName $TeamName).GroupId
       $Path=".\Channels available in $TeamName team $((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
-      Get-TeamChannel -GroupId $GroupId | Foreach {
+      Get-TeamChannel -GroupId $GroupId | ForEach-Object {
        $ChannelName=$_.DisplayName
        Write-Progress -Activity "`n     Processed channel count: $Count "`n"  Currently Processing Channel: $ChannelName"
        $Count++
@@ -279,10 +279,10 @@ Do {
        $Description=$_.Description
        $ChannelUser=Get-TeamChannelUser -GroupId $GroupId -DisplayName $ChannelName
        $ChannelMemberCount=$ChannelUser.Count
-       $ChannelOwnerCount=($ChannelUser | ?{$_.role -eq "Owner"}).count
+       $ChannelOwnerCount=($ChannelUser | Where-Object{$_.role -eq "Owner"}).count
        $Result=@{'Teams Name'=$TeamName;'Channel Name'=$ChannelName;'Membership Type'=$MembershipType;'Description'=$Description;'Total Members Count'=$ChannelMemberCount;'Owners Count'=$ChannelOwnerCount}
        $Results= New-Object psobject -Property $Result
-       $Results | select 'Teams Name','Channel Name','Membership Type','Description','Owners Count','Total Members Count' | Export-Csv $Path -NoTypeInformation -Append
+       $Results | Select-Object 'Teams Name','Channel Name','Membership Type','Description','Owners Count','Total Members Count' | Export-Csv $Path -NoTypeInformation -Append
       }
       Write-Progress -Activity "`n     Processed channel count: $Count "`n"  Currently Processing Channel: $ChannelName" -Completed
       if((Test-Path -Path $Path) -eq "True") 
@@ -299,13 +299,13 @@ Do {
       $GroupId=(Get-Team -DisplayName $TeamName).GroupId 
       Write-Host Exporting $ChannelName"'s" Members and Owners report...
       $Path=".\MembersOf $ChannelName channel report $((Get-Date -format yyyy-MMM-dd-ddd` hh-mm` tt).ToString()).csv"
-      Get-TeamChannelUser -GroupId $GroupId -DisplayName $ChannelName | foreach {
+      Get-TeamChannelUser -GroupId $GroupId -DisplayName $ChannelName | ForEach-Object {
        $Name=$_.Name
        $UPN=$_.User
        $Role=$_.Role
        $Result=@{'Teams Name'=$TeamName;'Channel Name'=$ChannelName;'Member Mail'=$UPN;'Member Name'=$Name;'Role'=$Role}
        $Results= New-Object psobject -Property $Result
-       $Results | select 'Teams Name','Channel Name','Member Name','Member Mail',Role | Export-Csv $Path -NoTypeInformation -Append
+       $Results | Select-Object 'Teams Name','Channel Name','Member Name','Member Mail',Role | Export-Csv $Path -NoTypeInformation -Append
       }   
       if((Test-Path -Path $Path) -eq "True") 
       {
