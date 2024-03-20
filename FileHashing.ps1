@@ -21,14 +21,8 @@ function Get-ControlHash {
 
 $FileTohash = Get-FileToHash
 $ControlHash = Get-ControlHash
-<<<<<<< HEAD
-$Match = $false
-$Algs = ("MD5", "SHA1", "SHA256", "SHA384", "SHA512")
-write-host "Hash`t`t`tFile Hash" -ForegroundColor Yellow
-=======
 $Algs = ("MD5","SHA1", "SHA256", "SHA384", "SHA512")
 write-host "Algorithm`t`tFile Hash" -ForegroundColor Yellow
->>>>>>> 4d1956382f7e76f81b72c9261a7b038c28175865
 foreach ($Alg in $Algs) {
     $Hash = (Get-FileHash -Path $FileToHash -Algorithm $Alg).Hash
     [String]::Format("[-] {0}`t`t{1}", $Alg, $Hash) 

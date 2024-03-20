@@ -31,7 +31,7 @@ foreach ($User in $Users) {
         $UserList = $UserList + [PSCustomObject]@{
             First_Name          = $First;
             Last_Name           = $Last;
-            Dispaly_Name        = $DisplayName;
+            Display_Name        = $DisplayName;
             User_Principal_Name = $Username;
             Title               = $Title;
             Department          = $Department;
