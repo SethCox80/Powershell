@@ -9,7 +9,9 @@ foreach ($User in $Users) {
     $Username = $User.userprincipalname
     $Grade = $User.Department
     $Title = $User.Title
-    $IsBlocked = $Student.BlockCredential
+    $IsBlocked = $User.BlockCredential
+    $First = $User.FirstName
+    $Last = $User.LastName
 
     If ($Title -eq 'Student') {
         write-host $Name, "grade" $Grade, "is blocked: " $IsBlocked -ForegroundColor Yellow

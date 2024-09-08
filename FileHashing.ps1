@@ -4,6 +4,7 @@ function Get-FileToHash {
         return $FileToHash
     }
     else {
+        Write-Host "Path or file not found" -Foregroundcolor Red
         Get-FileToHash
     }
 }
@@ -30,7 +31,8 @@ foreach ($Alg in $Algs) {
         $Match = $true
         break
     }
+    
 }
-if($Match -ne $true){
+if ($Match -ne $true) {
     write-host "[::] File did not match given file hash in any hash Algorythm!!!"-ForegroundColor Red
 }
