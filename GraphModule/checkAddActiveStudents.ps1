@@ -1,159 +1,111 @@
 <# 
-    NewYearStudentsUnlockAdd-Graph.ps1
-    Converted from MSOnline to Microsoft Graph PowerShell SDK
+Create Entra ID (Azure AD) users from CSV via Microsoft Graph
 
-    CSV columns expected (same as original):
-      - First Name
-      - Last Name
-      - Display Name
-      - Username
-      - Grade Level   (K,1,2,3,4,5,6,7,8)
+CSV headers (must match exactly):
+First_Name, Last_Name, Display_Name, Username, Password, Grade
 
-    Key changes from MSOnline → Graph:
-      - Get-MsolUser        -> Get-MgUser -Filter "userPrincipalName eq '...'"
-      - New-MsolUser        -> New-MgUser
-      - Set-MsolUser        -> Update-MgUser
-      - BlockCredential     -> accountEnabled (true/false)
+Notes:
+- If Username lacks a domain, the script appends $DefaultDomain.
+- If Password is empty, one will be auto-generated.
+- Sets Department to "Grade <Grade>" so you can filter later.
+- Forces password change at next sign-in (set to $false if you don’t want that).
+- Does NOT unlock accounts or reset existing users.
 #>
 
-# --- SETTINGS ---------------------------------------------------------------
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$CsvPath,
 
-$CsvPath = "C:\Git\Powershell\Data\StudentRoster.csv"
+    # Used only when a Username value does NOT already contain "@domain"
+    [string]$DefaultDomain = ""
+)
 
-# Optional: set a temporary password for NEW accounts or for resetting existing ones
-$SetPasswordForNewUsers     = $true
-$ResetPasswordIfUserExists  = $false
-$DefaultTempPassword        = "ChangeMe!2025"
+# 1) Ensure Microsoft Graph is available and connect
+if (-not (Get-Module -ListAvailable Microsoft.Graph)) {
+    Write-Host "Installing Microsoft.Graph..." -ForegroundColor Yellow
+    Install-Module Microsoft.Graph -Scope CurrentUser -Force
+}
+Import-Module Microsoft.Graph
 
-# Optional: force account to be enabled (unblocked)
-$EnsureAccountEnabled = $true
+$scopes = @('User.ReadWrite.All')
+Connect-MgGraph -Scopes $scopes -NoWelcome | Out-Null
 
-# --- FUNCTIONS --------------------------------------------------------------
-
-function Get-StudentGradeName {
-    param([string]$GradeLevel)
-    switch ($GradeLevel) {
-        'K' { 'Kindergarten' }
-        '1' { 'First' }
-        '2' { 'Second' }
-        '3' { 'Third' }
-        '4' { 'Fourth' }
-        '5' { 'Fifth' }
-        '6' { 'Sixth' }
-        '7' { 'Seventh' }
-        '8' { 'Eighth' }
-        default { $GradeLevel } # pass-through if unexpected
-    }
+# Helper: Generate random password
+function New-RandomPassword {
+    param([int]$Length = 10)
+    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'
+    -join ((1..$Length) | ForEach-Object { $chars[(Get-Random -Max $chars.Length)] })
 }
 
-function Get-UserByUPN {
-    param([Parameter(Mandatory)][string]$UserPrincipalName)
-
-    $filter = "userPrincipalName eq '$UserPrincipalName'"
-    $user = Get-MgUser -Filter $filter -ConsistencyLevel eventual -CountVariable count
-    if ($user) { return $user[0] } else { return $null }
+# 2) Load CSV
+if (-not (Test-Path -Path $CsvPath)) {
+    throw "CSV not found at: $CsvPath"
 }
+$rows = Import-Csv -Path $CsvPath
 
-function Set-StudentUser {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$First,
-        [Parameter(Mandatory)][string]$Last,
-        [Parameter(Mandatory)][string]$DisplayName,
-        [Parameter(Mandatory)][string]$UserPrincipalName,
-        [Parameter(Mandatory)][string]$GradeDepartment
-    )
+# 3) Process rows
+foreach ($r in $rows) {
+    $first      = ($r.'First_Name').Trim()
+    $last       = ($r.'Last_Name').Trim()
+    $display    = ($r.'Display_Name').Trim()
+    $usernameIn = ($r.'Username').Trim()
+    $password   = ($r.'Password')
+    $grade      = ($r.'Grade').ToString().Trim()
 
-    $existing = Get-UserByUPN -UserPrincipalName $UserPrincipalName
-
-    if ($existing) {
-        Write-Host "$($existing.DisplayName) exists. Updating profile..." -ForegroundColor Cyan
-
-        $updateBody = @{
-            GivenName       = $First
-            Surname         = $Last
-            DisplayName     = $DisplayName
-            Department      = $GradeDepartment
-            JobTitle        = "Student"
-        }
-
-        if ($EnsureAccountEnabled -and -not $existing.AccountEnabled) {
-            $updateBody['AccountEnabled'] = $true
-        }
-
-        try {
-            Update-MgUser -UserId $existing.Id -BodyParameter $updateBody
-
-            if ($ResetPasswordIfUserExists) {
-                Write-Host "Resetting password for existing user..." -ForegroundColor Yellow
-                Update-MgUser -UserId $existing.Id -PasswordProfile @{
-                    ForceChangePasswordNextSignIn = $true
-                    Password = $DefaultTempPassword
-                }
-            }
-
-            Write-Host "$DisplayName has been edited" -ForegroundColor Yellow
-            return $existing.Id
-        }
-        catch {
-            Write-Warning "Failed to update user $UserPrincipalName: $($_.Exception.Message)"
-            return $null
-        }
-    }
-    else {
-        Write-Host "$DisplayName $GradeDepartment does not exist. Creating user." -ForegroundColor Red
-
-        $passwordProfile = $null
-        if ($SetPasswordForNewUsers) {
-            $passwordProfile = @{
-                ForceChangePasswordNextSignIn = $true
-                Password = $DefaultTempPassword
-            }
-        }
-
-        $newBody = @{
-            AccountEnabled    = $true
-            DisplayName       = $DisplayName
-            MailNickname      = ($UserPrincipalName -split '@')[0]
-            UserPrincipalName = $UserPrincipalName
-            GivenName         = $First
-            Surname           = $Last
-            Department        = $GradeDepartment
-            JobTitle          = "Student"
-        }
-        if ($passwordProfile) { $newBody['PasswordProfile'] = $passwordProfile }
-
-        try {
-            $created = New-MgUser -BodyParameter $newBody
-            Write-Host "Created: $DisplayName ($UserPrincipalName)" -ForegroundColor Green
-            return $created.Id
-        }
-        catch {
-            Write-Warning "Failed to create user $UserPrincipalName: $($_.Exception.Message)"
-            return $null
-        }
-    }
-}
-
-# --- MAIN -------------------------------------------------------------------
-
-# Make sure you have already connected with:
-# Connect-MgGraph -Scopes "User.ReadWrite.All","Directory.ReadWrite.All"
-
-$Roster = Import-Csv $CsvPath
-
-foreach ($Student in $Roster) {
-    $First       = $Student.'First Name'
-    $Last        = $Student.'Last Name'
-    $DisplayName = $Student.'Display Name'
-    $Username    = $Student.'Username'
-    $Grade       = Get-StudentGradeName -GradeLevel $Student.'Grade Level'
-
-    if (-not $Username -or -not $DisplayName) {
-        Write-Warning "Skipping row (missing Username or Display Name)."
+    if ([string]::IsNullOrWhiteSpace($first) -or
+        [string]::IsNullOrWhiteSpace($last)  -or
+        [string]::IsNullOrWhiteSpace($display) -or
+        [string]::IsNullOrWhiteSpace($usernameIn)) {
+        Write-Warning "Skipping row with missing required fields: $($r | ConvertTo-Json -Compress)"
         continue
     }
 
-    Set-StudentUser -First $First -Last $Last -DisplayName $DisplayName -UserPrincipalName $Username -GradeDepartment $Grade
+    # Generate password if missing
+    if ([string]::IsNullOrWhiteSpace($password)) {
+        $password = New-RandomPassword
+        Write-Host "Generated password for $usernameIn : $password" -ForegroundColor Cyan
+    }
+
+    # Build UPN and mailNickname
+    $upn = if ($usernameIn -match '@') {
+        $usernameIn
+    } elseif ($DefaultDomain) {
+        "$usernameIn@$DefaultDomain"
+    } else {
+        throw "Username '$usernameIn' has no domain and no -DefaultDomain was provided."
+    }
+    $mailNickname = ($upn -split '@')[0]
+
+    # Skip if already exists
+    $existing = Get-MgUser -Filter "userPrincipalName eq '$upn'"
+    if ($existing) {
+        Write-Host "User already exists, skipping: $upn" -ForegroundColor Yellow
+        continue
+    }
+
+    $pwdProfile = @{
+        Password                             = $password
+        ForceChangePasswordNextSignIn        = $true
+        ForceChangePasswordNextSignInWithMfa = $false
+    }
+
+    try {
+        New-MgUser `
+            -AccountEnabled:$true `
+            -DisplayName $display `
+            -GivenName $first `
+            -Surname $last `
+            -UserPrincipalName $upn `
+            -MailNickname $mailNickname `
+            -Department ("Grade " + $grade) `
+            -PasswordProfile $pwdProfile | Out-Null
+
+        Write-Host "Created: $upn" -ForegroundColor Green
+    }
+    catch {
+        Write-Warning "Failed to create $upn : $($_.Exception.Message)"
+    }
 }
-Write-Host "Done. Processed $($Roster.Count) entries from CSV." -ForegroundColor Green
+
+Disconnect-MgGraph
+Write-Host "Done." -ForegroundColor Green
